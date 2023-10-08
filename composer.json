@@ -8,7 +8,8 @@
       "App\\" : "src/App/",
       "Command\\" : "src/Command/",
       "Connection\\" : "src/Connection/",
-      "Entity\\" : "src/Entity/"
+      "Entity\\" : "src/Entity/",
+      "Utils\\" : "src/Utils/"
     }
   },
   "require": {

@@ -48,4 +48,19 @@ class ShippingRepository
         $this->em->clear();
     }
 
+    public function findShippingByZipCode(string $zipCode, int $offset = 0, int $limit = 100): array
+    {
+        $qb = $this->em->createQueryBuilder();
+        $qb = $qb->select('s.shipmentDate', 's.deliveredDate')
+            ->from(Shipping::class, 's')
+            ->where('s.zipCode = :zipCode')
+            ->orderBy('s.id', 'ASC')
+            ->setParameter('zipCode', $zipCode);
+
+        return $qb->setFirstResult( $offset )
+            ->setMaxResults( $limit )
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }
