@@ -2,13 +2,11 @@
 
 namespace Command;
 
-use Connection\ConnectionInterface;
+use App\ShippingRepository;
 use DateTime;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
-use Entity\Shipping;
 use Faker\Factory;
 use Faker\Generator;
 
@@ -19,19 +17,15 @@ class ShippingDataGeneratorCommand
     private const MAX_DELIVERY_DAYS = 14;
     private const DEFAULT_START_DATE = '-1 year';
     private const DATE_TIME_FORMAT = 'd-m-Y H:i:s';
-    private const BATCH_SIZE = 100;
 
     private Generator $faker;
-    private EntityManager $em;
 
     public function __construct(
-        private readonly ConnectionInterface $dbConnection,
+        private readonly ShippingRepository $shippingRepository,
         private readonly int $nbZipCodes = 10,
         private readonly int $nbDatesPerZipCode = 1000
     ) {
         $this->faker = Factory::create();
-        $this->em = $this->dbConnection->getConnection();
-        self::init();
     }
 
     /**
@@ -39,22 +33,13 @@ class ShippingDataGeneratorCommand
      * @throws ORMException
      * @throws MappingException
      */
-    public function generate(): void
+    public function generateAndSave(): void
     {
         $zipCodes = $this->generateZipCodes($this->nbZipCodes);
         foreach ($zipCodes as $zipCode) {
-            $allData = [];
-            for ($i = 0; $i < $this->nbDatesPerZipCode; $i++) {
-                $allData[] = $this->generateDates();
-            }
-
-            $this->saveData($zipCode, $allData);
+            $datesList = $this->generateDatesList();
+            $this->shippingRepository->saveAllData($zipCode, $datesList);
         }
-    }
-
-    private function init(): void
-    {
-
     }
 
     /** @return array<DateTime> */
@@ -94,29 +79,14 @@ class ShippingDataGeneratorCommand
         return $zipCodes;
     }
 
-    /**
-     * @param array<array<DateTime>> $allData
-     * @throws OptimisticLockException
-     * @throws ORMException
-     * @throws MappingException
-     */
-    private function saveData(string $zipCode, array $allData): void
+    private function generateDatesList(): array
     {
-        foreach ($allData as $key => $data) {
-            $shipping = new Shipping();
-            $shipping->setZipCode($zipCode);
-            $shipping->setShipmentDate($data['startDate']);
-            $shipping->setDeliveredDate($data['endDate']);
-            $this->em->persist($shipping);
-
-            if (($key % self::BATCH_SIZE) === 0) {
-                $this->em->flush();
-                $this->em->clear();
-            }
+        $allData = [];
+        for ($i = 0; $i < $this->nbDatesPerZipCode; $i++) {
+            $allData[] = $this->generateDates();
         }
 
-        $this->em->flush();
-        $this->em->clear();
+        return $allData;
     }
 
 }
