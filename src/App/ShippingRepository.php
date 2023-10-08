@@ -48,7 +48,13 @@ class ShippingRepository
         $this->em->clear();
     }
 
-    public function findShippingByZipCode(string $zipCode, int $offset = 0, int $limit = 100): array
+    public function findShippingByZipCodeAndInterval(
+        string $zipCode,
+        DateTime $startDate = null,
+        DateTime $endDate = null,
+        int $offset = 0,
+        int $limit = 100
+    ): array
     {
         $qb = $this->em->createQueryBuilder();
         $qb = $qb->select('s.shipmentDate', 's.deliveredDate')
@@ -56,6 +62,16 @@ class ShippingRepository
             ->where('s.zipCode = :zipCode')
             ->orderBy('s.id', 'ASC')
             ->setParameter('zipCode', $zipCode);
+
+        if ($startDate) {
+            $qb->andWhere('s.shipmentDate >= :startDate')
+                ->setParameter('startDate', $startDate);
+        }
+
+        if ($endDate) {
+            $qb->andWhere('s.deliveredDate <= :endDate')
+                ->setParameter('endDate', $endDate);
+        }
 
         return $qb->setFirstResult( $offset )
             ->setMaxResults( $limit )

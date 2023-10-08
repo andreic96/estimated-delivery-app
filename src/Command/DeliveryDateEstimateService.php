@@ -6,7 +6,7 @@ use App\ShippingRepository;
 use DateTime;
 use Utils\DateUtils;
 
-class ShippingEstimateCommand
+class DeliveryDateEstimateService
 {
 
     private const PAGE_SIZE = 100;
@@ -15,13 +15,20 @@ class ShippingEstimateCommand
     {
     }
 
-    public function estimate(string $zipCode): ?int
+    public function estimate(string $zipCode, DateTime $startDate = null, DateTime $endDate = null): ?DateTime
     {
+        //TODO maybe we can precalculate and store in db this data
         $days = [];
         $page = 1;
         while(true) {
             $offset = ($page - 1) * self::PAGE_SIZE;
-            $shippingDataByZipCode = $this->shippingRepository->findShippingByZipCode($zipCode, $offset, self::PAGE_SIZE);
+            $shippingDataByZipCode = $this->shippingRepository->findShippingByZipCodeAndInterval(
+                $zipCode,
+                $startDate,
+                $endDate,
+                $offset,
+                self::PAGE_SIZE
+            );
 
             if (empty($shippingDataByZipCode)) {
                 break;
@@ -31,7 +38,13 @@ class ShippingEstimateCommand
             $page++;
         }
 
-        return !empty($days) ? round(array_sum($days) / count($days)) : null;
+        if (!empty($days)) {
+            $averageDays = round(array_sum($days) / count($days));
+            echo $averageDays."\n";
+            return (new DateTime())->modify('+'.$averageDays.' Weekdays');
+        }
+
+        return null;
     }
 
     private function calculateDays(array $shippingDataByZipCode, array &$days): void
