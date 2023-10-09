@@ -38,4 +38,9 @@ class DateUtils
         return count(array_filter(iterator_to_array($interval), [DateUtils::class, 'isWeekDay'])) * $inverse;
     }
 
+    public static function isValidDate(?string $date): bool
+    {
+        return $date !== null && strtotime($date) !== false;
+    }
+
 }

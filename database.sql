@@ -1,3 +1,5 @@
+CREATE DATABASE shipping;
+USE shipping;
 CREATE TABLE shipping (
     id BIGINT(11) UNSIGNED AUTO_INCREMENT,
     zip_code VARCHAR(10) NOT NULL,

@@ -16,7 +16,7 @@ class ShippingDataGeneratorService
     private const MIN_DELIVERY_DAYS = 3;
     private const MAX_DELIVERY_DAYS = 14;
     private const DEFAULT_START_DATE = '-1 year';
-    private const DATE_TIME_FORMAT = 'd-m-Y H:i:s';
+    private const DATE_TIME_FORMAT = 'Y-m-d H:i:s';
 
     private Generator $faker;
 

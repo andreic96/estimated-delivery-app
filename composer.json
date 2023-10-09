@@ -9,6 +9,7 @@
       "Service\\" : "src/Service/",
       "Connection\\" : "src/Connection/",
       "Entity\\" : "src/Entity/",
+      "Exception\\" : "src/Exception/",
       "Repository\\" : "src/Repository/",
       "Utils\\" : "src/Utils/"
     }

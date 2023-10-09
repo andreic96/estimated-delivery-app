@@ -4,8 +4,12 @@ namespace App;
 
 use DateTime;
 use Exception;
+use Exception\InvalidDateTimeException;
+use Exception\InvalidZipCodeException;
 use Service\DeliveryDateEstimateService;
 use Service\ShippingDataGeneratorService;
+use Utils\DateUtils;
+use Utils\ZipCodeUtils;
 
 class AppManager
 {
@@ -34,16 +38,16 @@ class AppManager
 
     private function runDeliveryEstimate(): void
     {
-        //TODO validate date inputs (check format and if startDate < endDate)
-        $zipCode = '68298';
-        $startDate = new DateTime('2023-03-25 18:40:52');
-        $endDate = new DateTime('2023-04-18 10:06:00');
-
-        $estimatedDeliveryDate = null;
+        //TODO move this to an Input class
         try {
-            $estimatedDeliveryDate = $this->deliveryDateEstimateService->estimate($zipCode, new DateTime(), $startDate, $endDate);
+            $zipCode = $this->readAndValidateZipCode();
+            $startDate = $this->readAndValidateStartDate();
+            $endDate = $this->readAndValidateEndDate();
+            $calculateFromDate = new DateTime(); //TODO customise this
+
+            $estimatedDeliveryDate = $this->deliveryDateEstimateService->estimate($zipCode, $calculateFromDate, $startDate, $endDate);
         } catch (Exception $e) {
-            self::logError($e->getMessage());
+            self::logError('ERROR on calculating estimated delivery time', $e->getMessage());
             return;
         }
 
@@ -51,7 +55,8 @@ class AppManager
             echo 'Zip code ' . $zipCode . ' not found';
         }
 
-        echo $estimatedDeliveryDate->format('d-m-Y');
+        echo 'Today is '.(new DateTime())->format('d-m-Y').PHP_EOL;
+        echo 'Delivery expected on: '.$estimatedDeliveryDate->format('d-m-Y');
     }
 
     private function runShippingDataGenerator(): void
@@ -59,13 +64,63 @@ class AppManager
         try {
             $this->shippingDataGeneratorService->generateAndSave();
         } catch (Exception $e) {
-            self::logError($e->getMessage());
+            self::logError('ERROR on generating and saving data', $e->getMessage());
         }
     }
 
-    private static function logError(string $error): void
+    /**
+     * @throws InvalidZipCodeException
+     */
+    private function readAndValidateZipCode(): string
     {
-        error_log(sprintf('ERROR on generating and saving data: %s', $error));
+        $zipCode = trim(readline("Input the ZipCode: "));
+
+        if (!ZipCodeUtils::isZipCodeValid($zipCode)) {
+            throw new InvalidZipCodeException();
+        }
+
+        return $zipCode;
+    }
+
+    /**
+     * @throws InvalidDateTimeException
+     * @throws Exception
+     */
+    private function readAndValidateStartDate(): ?DateTime
+    {
+        $startDate = trim(readline("Input the Start Date for historical data (leave empty if not needed): "));
+        if ($startDate === '') {
+            return null;
+        }
+
+        if (!DateUtils::isValidDate($startDate)) {
+            throw new InvalidDateTimeException();
+        }
+
+        return new DateTime($startDate);
+    }
+
+    /**
+     * @throws InvalidDateTimeException
+     * @throws Exception
+     */
+    private function readAndValidateEndDate(): ?DateTime
+    {
+        $endDate = trim(readline("Input the End Date for historical data (leave empty if not needed): "));
+        if ($endDate === '') {
+            return null;
+        }
+
+        if (!DateUtils::isValidDate($endDate)) {
+            throw new InvalidDateTimeException();
+        }
+
+        return new DateTime($endDate);
+    }
+
+    private static function logError(string $message, string $error): void
+    {
+        error_log(sprintf('%s: %s', $message, $error));
     }
 
 }
