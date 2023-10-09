@@ -1,6 +1,6 @@
 <?php
 
-namespace Command;
+namespace Service;
 
 use App\ShippingRepository;
 use DateTime;

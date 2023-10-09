@@ -1,7 +1,7 @@
 <?php
 
 use App\ShippingRepository;
-use Command\ShippingDataGeneratorCommand;
+use Service\ShippingDataGeneratorCommand;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;

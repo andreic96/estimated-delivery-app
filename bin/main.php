@@ -1,7 +1,7 @@
 <?php
 
-use Command\ShippingDataGeneratorCommand;
-use Command\DeliveryDateEstimateService;
+use Service\ShippingDataGeneratorCommand;
+use Service\DeliveryDateEstimateService;
 
 require __DIR__ . '/../vendor/autoload.php';
 $container = require __DIR__ . '/../config/container.php';
@@ -17,7 +17,7 @@ switch ($option){
 
         /** @var DeliveryDateEstimateService $deliveryDateEstimateService */
         $deliveryDateEstimateService = $container->get(DeliveryDateEstimateService::class);
-        $estimatedDeliveryDate = $deliveryDateEstimateService->estimate($zipCode, $startDate, $endDate);
+        $estimatedDeliveryDate = $deliveryDateEstimateService->estimate($zipCode, new DateTime(), $startDate, $endDate);
 
         if ($estimatedDeliveryDate === null) {
             echo 'Zip code ' . $zipCode . ' not found';
