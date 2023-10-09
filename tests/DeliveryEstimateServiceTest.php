@@ -1,6 +1,5 @@
 <?php
 
-use App\ShippingRepository;
 use PHPUnit\Framework\TestCase;
 use Service\AverageDeliveryDaysCalculator;
 use Service\DeliveryDateEstimateService;

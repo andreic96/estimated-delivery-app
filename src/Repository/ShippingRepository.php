@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace Repository;
 
 use Connection\ConnectionInterface;
 use DateTime;

@@ -1,11 +1,11 @@
 <?php
 
-use App\ShippingRepository;
-use Service\ShippingDataGeneratorCommand;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
+use Repository\ShippingRepository;
+use Service\ShippingDataGeneratorCommand;
 
 class ShippingDataGeneratorTest extends TestCase
 {

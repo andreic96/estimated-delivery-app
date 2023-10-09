@@ -8,6 +8,7 @@ $container = require __DIR__ . '/../config/container.php';
 
 $option = (int)readline("1) Estimate shipping \n 2) Generate shipping data ");
 
+//TODO add another class to handle this logic
 //TODO validate date inputs (check format and if startDate < endDate)
 switch ($option){
     case 1:
@@ -29,7 +30,11 @@ switch ($option){
     case 2:
         /** @var ShippingDataGeneratorCommand $shippingDataGenerator */
         $shippingDataGenerator = $container->get(ShippingDataGeneratorCommand::class);
-        $shippingDataGenerator->generateAndSave();
+        try {
+            $shippingDataGenerator->generateAndSave();
+        } catch (Exception $e) {
+            error_log(sprintf('ERROR on generating and saving data: %s', $e->getMessage()));
+        }
         break;
     default:
         echo 'No such option';

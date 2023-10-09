@@ -2,13 +2,13 @@
 
 namespace Service;
 
-use App\ShippingRepository;
 use DateTime;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
 use Faker\Factory;
 use Faker\Generator;
+use Repository\ShippingRepository;
 
 class ShippingDataGeneratorCommand
 {
@@ -35,6 +35,7 @@ class ShippingDataGeneratorCommand
      */
     public function generateAndSave(): void
     {
+        throw new \Exception('blah messsage');
         $zipCodes = $this->generateZipCodes($this->nbZipCodes);
         foreach ($zipCodes as $zipCode) {
             $datesList = $this->generateDatesList();

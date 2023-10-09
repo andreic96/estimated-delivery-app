@@ -2,8 +2,8 @@
 
 namespace Service;
 
-use App\ShippingRepository;
 use DateTime;
+use Repository\ShippingRepository;
 use Utils\DateUtils;
 
 class AverageDeliveryDaysCalculator
