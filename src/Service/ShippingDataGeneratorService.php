@@ -10,7 +10,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Repository\ShippingRepository;
 
-class ShippingDataGeneratorCommand
+class ShippingDataGeneratorService
 {
 
     private const MIN_DELIVERY_DAYS = 3;
@@ -35,7 +35,6 @@ class ShippingDataGeneratorCommand
      */
     public function generateAndSave(): void
     {
-        throw new \Exception('blah messsage');
         $zipCodes = $this->generateZipCodes($this->nbZipCodes);
         foreach ($zipCodes as $zipCode) {
             $datesList = $this->generateDatesList();

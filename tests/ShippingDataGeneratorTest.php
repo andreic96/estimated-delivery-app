@@ -5,7 +5,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Persistence\Mapping\MappingException;
 use PHPUnit\Framework\TestCase;
 use Repository\ShippingRepository;
-use Service\ShippingDataGeneratorCommand;
+use Service\ShippingDataGeneratorService;
 
 class ShippingDataGeneratorTest extends TestCase
 {
@@ -18,7 +18,7 @@ class ShippingDataGeneratorTest extends TestCase
     public function testGenerateStartDateLowerThanEndDate(): void
     {
         $shippingRepository = $this->createMock(ShippingRepository::class);
-        $shippingDataGenerator = new ShippingDataGeneratorCommand($shippingRepository, 5, 100);
+        $shippingDataGenerator = new ShippingDataGeneratorService($shippingRepository, 5, 100);
 
         $shippingRepository->expects($this->exactly(5))
             ->method('saveAllData');
